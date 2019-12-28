@@ -2,18 +2,16 @@
 /**
 * Name:  Auth Lang - English
 *
-* Author: Ben Edmunds
-* 		  ben.edmunds@gmail.com
-*         @benedmunds
-*
 * Author: Daniel Davis
 *         @ourmaninjapan
 *
-* Location: https://github.com/benedmunds/CodeIgniter-Ion-Auth
+* Location: https://github.com/ahmetson/CodeIgniter-Ws-Auth
 *
 * Created:  03.09.2013
 *
-* Description:  English language file for Ion Auth example views
+* Description:  English language file for Ws Auth example views
+*				 Nothing was added to original Ion Auth messages and errors.
+*				 Original created time and author didn't changed
 *
 */
 

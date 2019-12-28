@@ -2,19 +2,17 @@
 /**
 * Name:  Auth Lang - Bengali
 *
-* Author: Ben Edmunds
-* 		  ben.edmunds@gmail.com
-*         @benedmunds
-*
 *
 * Author: Arifur Rahman
 *         @arif2009
 *
-* Location: https://github.com/benedmunds/CodeIgniter-Ion-Auth
+* Location: https://github.com/ahmetson/CodeIgniter-Ws-Auth
 *
-* Created:  25.03.2018
+* Created:  03.25.2018
 *
-* Description:  Bengali language file for Ion Auth example views
+* Description:  Bengali language file for Ws Auth messages and errors
+*				 Nothing was added to original Ion Auth messages and errors.
+*				 Original created time and author didn't changed
 *
 */
 
