@@ -10,27 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=5.6"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:ahmetson/CodeIgniter-Ws-Auth.git"
-        }
-    ],
-    "scripts": {
-        "install-ws-auth": [
-            "[ -f application/config/ws_auth.php ] || cp -p vendor/ahmetson/codeigniter-ws-auth/config/ws_auth.php application/config/",
-            "[ -f application/controllers/Auth.php ] || cp -p vendor/ahmetson/codeigniter-ws-auth/controllers/Auth.php application/controllers/",
-            "cp -p vendor/ahmetson/codeigniter-ws-auth/libraries/Ws_auth.php application/libraries/",
-            "cp -p vendor/ahmetson/codeigniter-ws-auth/models/Ws_auth_model.php application/models/",
-            "[ -d application/views/auth ] || cp -pr vendor/ahmetson/codeigniter-ws-auth/views/* application/views/"
-        ],
-        "post-install-cmd": [
-            "@install-ws-auth"
-        ],
-        "post-update-cmd": [
-            "@install-ws-auth"
-        ]
+        "php": ">=5.6",
+        "cboden/ratchet": "^0.4.1"
     }
 }
