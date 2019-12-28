@@ -1,0 +1,6 @@
+.idea/
+*.log
+.github
+vendor
+userguide
+composer.lock
