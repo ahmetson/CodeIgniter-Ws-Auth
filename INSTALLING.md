@@ -58,6 +58,9 @@ Or autoload by adding the following to application/config/autoload.php
 ---
 
 ### Relational DB Setup
-Then just run the appropriate SQL file (if you're using migrations you can
-get the migrations from JD here:
-https://github.com/iamfiscus/codeigniter-ion-auth-migration).
+Add the tables from `/sql/` onto your database. Those are authorization related tables.
+
+Then, add the `sessions` table to track the Sessions.
+The more information and the scheme of the table could be found on the documentation of [Symfony Sessions PDO Handler](https://symfony.com/doc/2.2/cookbook/configuration/pdo_session_storage.html)
+
+
