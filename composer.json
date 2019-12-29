@@ -15,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "CodeIgniter-Ws-Auth\\": "src"
+            "CodeIgniter-Ws-Auth\\": "src/ws-auth"
         }
     }
 }
