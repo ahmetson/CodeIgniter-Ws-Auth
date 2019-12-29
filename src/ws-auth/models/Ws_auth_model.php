@@ -1,4 +1,11 @@
 <?php
+
+// session related
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+
+
 /**
  * Name:    Ws Auth Model
  * Author:  Medet 'Ahmetson' Atabayev
@@ -210,8 +217,6 @@ class Ws_auth_model extends CI_Model
 	 */
 	private function _connect_db ( $host = 'localhost', $dbname = 'ws-auth-tester', $username = 'root', $password = '' )
     {
-    	if ( isset  $this-> )
-
         $pdo = new PDO ( "mysql:host=$host;dbname=$dbname", $username, $password );
         $pdo->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
 
@@ -2050,7 +2055,7 @@ class Ws_auth_model extends CI_Model
 
 		foreach ( $session_data as $key => $value ) 
 		{
-			$this->session->set ( $key, $name );
+			$this->session->set ( $key, $value );
 		}
 
 		$this->trigger_events('post_set_session');
