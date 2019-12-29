@@ -28,6 +28,10 @@ class Message implements MessageComponentInterface
     {
         $this->clients = new \SplObjectStorage ();
         $this->users = array ();
+
+        $this->CI =& get_instance ();
+
+        $this->CI->load->model ( array ( 'auth_model', 'auth' ) );
     }
 
     private function _connect_db ()
@@ -62,39 +66,45 @@ class Message implements MessageComponentInterface
         $this->clients->attach ( $conn );
 
         $this->users [ $conn->resourceId ] = $conn;
-
-        $pdo = $this->_connect_db ();
-        $options = $this->_get_options ();
-        
-        $storage = new NativeSessionStorage([], new PdoSessionHandler($pdo, $options));
-        $session = new Session($storage);
-        $session->set('user', $conn->resourceId);
-
-        echo "On Connect {$conn->resourceId}\n";
+        // echo "On Connect {$conn->resourceId}\n";
     }
 
 
     /**
-     *  Client send data to the server some message
+     *  Client sends data to the server some message
      *
      *  @param Connection   $from           - Connection ID of a Client
      *  @param string       $message_string - Message in JSON format
      */
     public function onMessage ( ConnectionInterface $from, $message_string ) 
     {
-        echo "Recieved a message $message_string\n";
+        // echo "Recieved a message $message_string\n";
+        $message = json_decode ( $message_string, TRUE );
 
-        $pdo = $this->_connect_db ();
-        $options = $this->_get_options ();
+        if ( empty ( $message ) === TRUE || is_array ( $message ) === FALSE )
+        {
+            $from->send ( json_encode ( array ( 'message' => 'Invalid message data.', 'error' => TRUE ) ) );
+        }
+        else
+        {
+            if ( $message [ 0 ] !== 'register' && $message [ 0 ] !== 'login' &&
+                $message [ 0 ] !== 'logout' && $message [ 0 ] !== 'is_logged_in' )
+            {
+                echo "Unsupported command was given\n";
+                $from->send ( json_encode ( array ( 'message' => 'Command was not recognized.', 'error' => TRUE ) ) );
+            }
+            else
+            {
+                $command = $message [ 0 ];
+                $arguments = array_slice ( $message, 1 );
 
-        $storage = new NativeSessionStorage([], new PdoSessionHandler($pdo, $options));
-        $session = new Session($storage);
-        $resourceId = $session->get('user');
+                $result = $this->CI->auth->$command ( $arguments );
+                // var_dump ( $result );
 
-        echo "resourceId $resourceId\n";
-
-        // Return Back Result To Message Invoker
-        $from->send ( time () );
+                // Return Back Result To Message Invoker
+                $from->send ( $result );
+            }
+        }
     }
 
 
@@ -108,10 +118,13 @@ class Message implements MessageComponentInterface
 
         unset($this->users[$conn->resourceId]);
 
-        $wallet_address = array_search ( $conn->resourceId, $this->registered_users );
-        if ( $wallet_address !== FALSE )
+        if ( ! is_null ( $this->registered_users ) )
         {
-            unset ( $this->registered_users [ $wallet_address ] );
+            $wallet_address = array_search ( $conn->resourceId, $this->registered_users );
+            if ( $wallet_address !== FALSE )
+            {
+                unset ( $this->registered_users [ $wallet_address ] );
+            }
         }
     }
 
