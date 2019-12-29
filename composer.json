@@ -1,7 +1,7 @@
 {
     "name": "ahmetson/codeigniter-ws-auth",
     "description": "Authentication system for CodeIgniter that works with WebSocket Server Ratchet-php",
-    "type": "library",
+    "type": "codeigniter-library",
     "license": "MIT",
     "homepage": "https://https://github.com/ahmetson/CodeIgniter-Ws-Auth",
     "authors": [
@@ -11,11 +11,15 @@
     ],
     "require": {
         "php": ">=5.6",
-        "cboden/ratchet": "^0.4.1"
+        "cboden/ratchet": "^0.4.1",
+        "compwright/codeigniter-installers": "*"
     },
     "autoload": {
         "psr-4": {
             "CodeIgniter-Ws-Auth\\": "src/ws-auth"
         }
+    },
+    "extra": {
+        "codeigniter-application-dir": "src/ws-auth"
     }
 }
