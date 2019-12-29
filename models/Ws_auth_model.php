@@ -196,11 +196,110 @@ class Ws_auth_model extends CI_Model
 	 */
 	protected $db;
 
-	public function __construct()
+	/**
+	 * Session object
+	 *
+	 * @var session
+	 */
+	public $session;
+
+	/**
+	 * 	Creates a PDO connection
+	 *
+	 *	@return PDO object
+	 */
+	private function _connect_db ( $host = 'localhost', $dbname = 'ws-auth-tester', $username = 'root', $password = '' )
+    {
+    	if ( isset  $this-> )
+
+        $pdo = new PDO ( "mysql:host=$host;dbname=$dbname", $username, $password );
+        $pdo->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
+
+        return $pdo;
+    }
+
+    private function _get_options ()
+    {
+        $db_options = array (
+            'db_table'          => 'sessions',
+            'db_id_col'         => 'sess_id',
+            'db_data_col'       => 'sess_data',
+            'db_time_col'       => 'sess_time',
+            'db_lifetime_col'   => 'sess_lifetime',
+        );
+
+        return $db_options;
+    }
+
+	public function __construct ( $host = '', $dbname = '', $username = '', $password = '' )
 	{
-		$this->config->load('ion_auth', TRUE);
+		$this->config->load('ws_auth', TRUE);
 		$this->load->helper('cookie', 'date');
-		$this->lang->load('ion_auth');
+		$this->lang->load('ws_auth');
+
+		// get database data from codeigniter.
+		if ( function_exists ( 'get_instance' ) )
+		{
+			$CI = &get_instance ();
+			if ( ! is_null ( $CI ) && isset (  $CI->db ) )
+			{
+				// hostname
+				if ( isset ( $CI->db->hostname ) )
+				{
+					$host = $CI->db->hostname;
+				}
+
+				// database name
+				if ( isset ( $CI->db->database ) )
+				{
+					$dbname = $CI->db->database;
+				}
+
+				// username
+				if ( isset ( $CI->db->username ) )
+				{
+					$username = $CI->db->username;
+				}
+
+				// password
+				if ( isset ( $CI->db->password ) )
+				{
+					$password = $CI->db->password;
+				}
+			}
+		}
+		else if ( isset ( $this->db ) )
+		{
+				// hostname
+				if ( isset ( $this->db->hostname ) )
+				{
+					$host = $this->db->hostname;
+				}
+
+				// database name
+				if ( isset ( $this->db->database ) )
+				{
+					$dbname = $this->db->database;
+				}
+
+				// username
+				if ( isset ( $this->db->username ) )
+				{
+					$username = $this->db->username;
+				}
+
+				// password
+				if ( isset ( $this->db->password ) )
+				{
+					$password = $this->db->password;
+				}
+		}
+
+		$pdo = $this->_connect_db ( $host, $dbname, $username, $password );
+        $options = $this->_get_options ();
+        
+        $storage = new NativeSessionStorage([], new PdoSessionHandler ( $pdo, $options ) );
+        $this->session = new Session ( $storage );
 
 		// initialize the database
 		$group_name = $this->config->item('database_group_name', 'ws_auth');
