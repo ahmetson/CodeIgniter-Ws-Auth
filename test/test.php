@@ -60,36 +60,6 @@ function run_ws_server ( $port = 8000 )
 }
 
 
-/**
- *	Database connector. Sessions in test is stored on a database. But could be used other options too.
- *  Session system of Ratchet WebSocket is based and compatible with Symfony sessions.
- *	To see other session storage options, visit the official documentation:	
- *		https://symfony.com/doc/current/session.html
- *
- *	 Do not forget to use the correct Namescape for used storage method.
- *
- *
- *	@todo 	Before calling the function
- *	Create a database with the following table.
- *
- *	For more information, visit the official documentation:
- *		https://symfony.com/doc/current/doctrine/pdo_session_storage.html#mysql
- *
- *	Run the sql on Mysql Console or in phpmyadmin:
- *
- 		CREATE TABLE `sessions` (
- 			`sess_id` VARCHAR(128) NOT NULL PRIMARY KEY,
-   			`sess_data` BLOB NOT NULL,
-    		`sess_time` INTEGER UNSIGNED NOT NULL,
-    		`sess_lifetime` INTEGER UNSIGNED NOT NULL
-  		) COLLATE utf8mb4_bin, ENGINE = InnoDB;
- 
- */
- function connect_db ()
- {
- }
-
-
 ///////////////////////////////////////////////////////////
 // 	body
 ///////////////////////////////////////////////////////////
