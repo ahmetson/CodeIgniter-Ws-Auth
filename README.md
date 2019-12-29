@@ -1,8 +1,7 @@
 # CodeIgniter WebSockets Authorization
 ### Description
-by [Medet Ahmetson]
 
-Authentication System for your WebSocket Servers written by [Ratchet PHP](https://github.com/ratchetphp/Ratchet) and CodeIgniter framework.
+Authentication System for your WebSocket Servers written to support both [Ratchet PHP](https://github.com/ratchetphp/Ratchet) and CodeIgniter framework.
 
 It's based on [Ion Auth 3](https://github.com/benedmunds/CodeIgniter-Ion-Auth). **Ws Auth** changed the underlying code, without affecting the interface, to able the simple and easy to use Auth Lib for Ratchet PHP.
 
@@ -22,9 +21,6 @@ Since, the command interface of **Ws Auth** is the same as API of **IoN Auth 3**
 
 ## Documentation
 Documentation is located at http://benedmunds.com/ion_auth/
-
-## Upgrading
-See [UPGRADING.md](UPGRADING.md) file.
 
 ## Installation
 See [INSTALLING.md](INSTALLING.md) file.
