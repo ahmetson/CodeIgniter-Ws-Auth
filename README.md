@@ -23,9 +23,6 @@ Since, the command interface of **Ws Auth** is the same as API of **IoN Auth 3**
 ## Documentation
 Documentation is located at http://benedmunds.com/ion_auth/
 
-## Upgrading
-See [UPGRADING.md](UPGRADING.md) file.
-
 ## Installation
 See [INSTALLING.md](INSTALLING.md) file.
 
