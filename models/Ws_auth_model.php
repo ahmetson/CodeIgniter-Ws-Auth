@@ -203,8 +203,8 @@ class Ws_auth_model extends CI_Model
 		$this->lang->load('ion_auth');
 
 		// initialize the database
-		$group_name = $this->config->item('database_group_name', 'ion_auth');
-		if (empty($group_name)) 
+		$group_name = $this->config->item('database_group_name', 'ws_auth');
+		if ( empty ( $group_name ) ) 
 		{
 			// By default, use CI's db that should be already loaded
 			$CI =& get_instance();
@@ -217,19 +217,19 @@ class Ws_auth_model extends CI_Model
 		}   
 
 		// initialize db tables data
-		$this->tables = $this->config->item('tables', 'ion_auth');
+		$this->tables = $this->config->item('tables', 'ws_auth');
 
 		// initialize data
-		$this->identity_column = $this->config->item('identity', 'ion_auth');
-		$this->join = $this->config->item('join', 'ion_auth');
+		$this->identity_column = $this->config->item('identity', 'ws_auth');
+		$this->join = $this->config->item('join', 'ws_auth');
 
 		// initialize hash method options (Bcrypt)
-		$this->hash_method = $this->config->item('hash_method', 'ion_auth');
+		$this->hash_method = $this->config->item('hash_method', 'ws_auth');
 
 		// initialize messages and error
 		$this->messages    = [];
 		$this->errors      = [];
-		$delimiters_source = $this->config->item('delimiters_source', 'ion_auth');
+		$delimiters_source = $this->config->item('delimiters_source', 'ws_auth');
 
 		// load the error delimeters either from the config file or use what's been supplied to form validation
 		if ($delimiters_source === 'form_validation')
@@ -252,10 +252,10 @@ class Ws_auth_model extends CI_Model
 		else
 		{
 			// use delimiters from config
-			$this->message_start_delimiter = $this->config->item('message_start_delimiter', 'ion_auth');
-			$this->message_end_delimiter = $this->config->item('message_end_delimiter', 'ion_auth');
-			$this->error_start_delimiter = $this->config->item('error_start_delimiter', 'ion_auth');
-			$this->error_end_delimiter = $this->config->item('error_end_delimiter', 'ion_auth');
+			$this->message_start_delimiter = $this->config->item('message_start_delimiter', 'ws_auth');
+			$this->message_end_delimiter = $this->config->item('message_end_delimiter', 'ws_auth');
+			$this->error_start_delimiter = $this->config->item('error_start_delimiter', 'ws_auth');
+			$this->error_end_delimiter = $this->config->item('error_end_delimiter', 'ws_auth');
 		}
 
 		// initialize our hooks object
@@ -805,21 +805,21 @@ class Ws_auth_model extends CI_Model
 	{
 		$this->trigger_events('pre_register');
 
-		$manual_activation = $this->config->item('manual_activation', 'ion_auth');
+		$manual_activation = $this->config->item('manual_activation', 'ws_auth');
 
 		if ($this->identity_check($identity))
 		{
 			$this->set_error('account_creation_duplicate_identity');
 			return FALSE;
 		}
-		else if (!$this->config->item('default_group', 'ion_auth') && empty($groups))
+		else if (!$this->config->item('default_group', 'ws_auth') && empty($groups))
 		{
 			$this->set_error('account_creation_missing_default_group');
 			return FALSE;
 		}
 
 		// check if the default set in config exists in database
-		$query = $this->db->get_where($this->tables['groups'], ['name' => $this->config->item('default_group', 'ion_auth')], 1)->row();
+		$query = $this->db->get_where($this->tables['groups'], ['name' => $this->config->item('default_group', 'ws_auth')], 1)->row();
 		if (!isset($query->id) && empty($groups))
 		{
 			$this->set_error('account_creation_invalid_default_group');
@@ -942,7 +942,7 @@ class Ws_auth_model extends CI_Model
 				$this->clear_login_attempts($identity);
 				$this->clear_forgotten_password_code($identity);
 
-				if ($this->config->item('remember_users', 'ion_auth'))
+				if ($this->config->item('remember_users', 'ws_auth'))
 				{
 					if ($remember)
 					{
@@ -958,7 +958,7 @@ class Ws_auth_model extends CI_Model
 				$this->rehash_password_if_needed($user->password, $identity, $password);
 
 				// Regenerate the session (for security purpose: to avoid session fixation)
-				$this->session->sess_regenerate(FALSE);
+				$this->session->migrate(FALSE);
 
 				$this->trigger_events(['post_login', 'post_login_successful']);
 				$this->set_message('login_successful');
@@ -990,7 +990,7 @@ class Ws_auth_model extends CI_Model
 			return FALSE;
 		}
 
-		$recheck = (NULL !== $this->config->item('recheck_timer', 'ion_auth')) ? $this->config->item('recheck_timer', 'ion_auth') : 0;
+		$recheck = (NULL !== $this->config->item('recheck_timer', 'ws_auth')) ? $this->config->item('recheck_timer', 'ws_auth') : 0;
 
 		if ($recheck !== 0)
 		{
@@ -1013,7 +1013,7 @@ class Ws_auth_model extends CI_Model
 				{
 					$this->trigger_events('logout');
 
-					$identity = $this->config->item('identity', 'ion_auth');
+					$identity = $this->config->item('identity', 'ws_auth');
 
 					$this->session->unset_userdata([$identity, 'id', 'user_id']);
 
@@ -1039,9 +1039,9 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function is_max_login_attempts_exceeded($identity, $ip_address = NULL)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth'))
 		{
-			$max_attempts = $this->config->item('maximum_login_attempts', 'ion_auth');
+			$max_attempts = $this->config->item('maximum_login_attempts', 'ws_auth');
 			if ($max_attempts > 0)
 			{
 				$attempts = $this->get_attempts_num($identity, $ip_address);
@@ -1065,11 +1065,11 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function get_attempts_num($identity, $ip_address = NULL)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth'))
 		{
 			$this->db->select('1', FALSE);
 			$this->db->where('login', $identity);
-			if ($this->config->item('track_login_ip_address', 'ion_auth'))
+			if ($this->config->item('track_login_ip_address', 'ws_auth'))
 			{
 				if (!isset($ip_address))
 				{
@@ -1077,7 +1077,7 @@ class Ws_auth_model extends CI_Model
 				}
 				$this->db->where('ip_address', $ip_address);
 			}
-			$this->db->where('time >', time() - $this->config->item('lockout_time', 'ion_auth'), FALSE);
+			$this->db->where('time >', time() - $this->config->item('lockout_time', 'ws_auth'), FALSE);
 			$qres = $this->db->get($this->tables['login_attempts']);
 			return $qres->num_rows();
 		}
@@ -1097,11 +1097,11 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function get_last_attempt_time($identity, $ip_address = NULL)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth'))
 		{
 			$this->db->select('time');
 			$this->db->where('login', $identity);
-			if ($this->config->item('track_login_ip_address', 'ion_auth'))
+			if ($this->config->item('track_login_ip_address', 'ws_auth'))
 			{
 				if (!isset($ip_address))
 				{
@@ -1130,7 +1130,7 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function get_last_attempt_ip($identity)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth') && $this->config->item('track_login_ip_address', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth') && $this->config->item('track_login_ip_address', 'ws_auth'))
 		{
 			$this->db->select('ip_address');
 			$this->db->where('login', $identity);
@@ -1157,10 +1157,10 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function increase_login_attempts($identity)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth'))
 		{
 			$data = ['ip_address' => '', 'login' => $identity, 'time' => time()];
-			if ($this->config->item('track_login_ip_address', 'ion_auth'))
+			if ($this->config->item('track_login_ip_address', 'ws_auth'))
 			{
 				$data['ip_address'] = $this->input->ip_address();
 			}
@@ -1186,13 +1186,13 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function clear_login_attempts($identity, $old_attempts_expire_period = 86400, $ip_address = NULL)
 	{
-		if ($this->config->item('track_login_attempts', 'ion_auth'))
+		if ($this->config->item('track_login_attempts', 'ws_auth'))
 		{
 			// Make sure $old_attempts_expire_period is at least equals to lockout_time
-			$old_attempts_expire_period = max($old_attempts_expire_period, $this->config->item('lockout_time', 'ion_auth'));
+			$old_attempts_expire_period = max($old_attempts_expire_period, $this->config->item('lockout_time', 'ws_auth'));
 
 			$this->db->where('login', $identity);
-			if ($this->config->item('track_login_ip_address', 'ion_auth'))
+			if ($this->config->item('track_login_ip_address', 'ws_auth'))
 			{
 				if (!isset($ip_address))
 				{
@@ -1906,14 +1906,14 @@ class Ws_auth_model extends CI_Model
 		$this->trigger_events('set_lang');
 
 		// if the user_expire is set to zero we'll set the expiration two years from now.
-		if($this->config->item('user_expire', 'ion_auth') === 0)
+		if($this->config->item('user_expire', 'ws_auth') === 0)
 		{
 			$expire = self::MAX_COOKIE_LIFETIME;
 		}
 		// otherwise use what is set
 		else
 		{
-			$expire = $this->config->item('user_expire', 'ion_auth');
+			$expire = $this->config->item('user_expire', 'ws_auth');
 		}
 
 		set_cookie([
@@ -1986,18 +1986,18 @@ class Ws_auth_model extends CI_Model
 			if ($this->db->affected_rows() > -1)
 			{
 				// if the user_expire is set to zero we'll set the expiration two years from now.
-				if($this->config->item('user_expire', 'ion_auth') === 0)
+				if($this->config->item('user_expire', 'ws_auth') === 0)
 				{
 					$expire = self::MAX_COOKIE_LIFETIME;
 				}
 				// otherwise use what is set
 				else
 				{
-					$expire = $this->config->item('user_expire', 'ion_auth');
+					$expire = $this->config->item('user_expire', 'ws_auth');
 				}
 
 				set_cookie([
-					'name'   => $this->config->item('remember_cookie_name', 'ion_auth'),
+					'name'   => $this->config->item('remember_cookie_name', 'ws_auth'),
 					'value'  => $token->user_code,
 					'expire' => $expire
 				]);
@@ -2024,7 +2024,7 @@ class Ws_auth_model extends CI_Model
 		$this->trigger_events('pre_login_remembered_user');
 
 		// Retrieve token from cookie
-		$remember_cookie = get_cookie($this->config->item('remember_cookie_name', 'ion_auth'));
+		$remember_cookie = get_cookie($this->config->item('remember_cookie_name', 'ws_auth'));
 		$token = $this->_retrieve_selector_validator_couple($remember_cookie);
 
 		if ($token === FALSE)
@@ -2058,7 +2058,7 @@ class Ws_auth_model extends CI_Model
 				$this->clear_forgotten_password_code($identity);
 
 				// extend the users cookies if the option is enabled
-				if ($this->config->item('user_extend_on_login', 'ion_auth'))
+				if ($this->config->item('user_extend_on_login', 'ws_auth'))
 				{
 					$this->remember_user($identity);
 				}
@@ -2070,7 +2070,7 @@ class Ws_auth_model extends CI_Model
 				return TRUE;
 			}
 		}
-		delete_cookie($this->config->item('remember_cookie_name', 'ion_auth'));
+		delete_cookie($this->config->item('remember_cookie_name', 'ws_auth'));
 
 		$this->trigger_events(['post_login_remembered_user', 'post_login_remembered_user_unsuccessful']);
 		return FALSE;
@@ -2158,7 +2158,7 @@ class Ws_auth_model extends CI_Model
 
 		// restrict change of name of the admin group
 		$group = $this->db->get_where($this->tables['groups'], ['id' => $group_id])->row();
-		if ($this->config->item('admin_group', 'ion_auth') === $group->name && $group_name !== $group->name)
+		if ($this->config->item('admin_group', 'ws_auth') === $group->name && $group_name !== $group->name)
 		{
 			$this->set_error('group_name_admin_not_alter');
 			return FALSE;
@@ -2194,7 +2194,7 @@ class Ws_auth_model extends CI_Model
 			return FALSE;
 		}
 		$group = $this->group($group_id)->row();
-		if($group->name == $this->config->item('admin_group', 'ion_auth'))
+		if($group->name == $this->config->item('admin_group', 'ws_auth'))
 		{
 			$this->trigger_events(['post_delete_group', 'post_delete_group_notallowed']);
 			$this->set_error('group_delete_notallowed');
@@ -2603,7 +2603,7 @@ class Ws_auth_model extends CI_Model
 		if ($identity)
 		{
 			$user_id = $this->get_user_id_from_identity($identity);
-			if ($user_id && $this->in_group($this->config->item('admin_group', 'ion_auth'), $user_id))
+			if ($user_id && $this->in_group($this->config->item('admin_group', 'ws_auth'), $user_id))
 			{
 				$is_admin = TRUE;
 			}
@@ -2614,14 +2614,14 @@ class Ws_auth_model extends CI_Model
 		{
 			case 'bcrypt':
 				$params = [
-					'cost' => $is_admin ? $this->config->item('bcrypt_admin_cost', 'ion_auth')
-										: $this->config->item('bcrypt_default_cost', 'ion_auth')
+					'cost' => $is_admin ? $this->config->item('bcrypt_admin_cost', 'ws_auth')
+										: $this->config->item('bcrypt_default_cost', 'ws_auth')
 				];
 				break;
 
 			case 'argon2':
-				$params = $is_admin ? $this->config->item('argon2_admin_params', 'ion_auth')
-									: $this->config->item('argon2_default_params', 'ion_auth');
+				$params = $is_admin ? $this->config->item('argon2_admin_params', 'ws_auth')
+									: $this->config->item('argon2_default_params', 'ws_auth');
 				break;
 
 			default:
@@ -2736,7 +2736,7 @@ class Ws_auth_model extends CI_Model
 	{
 		$this->trigger_events('pre_sha1_password_migration');
 
-		if ($this->config->item('store_salt', 'ion_auth'))
+		if ($this->config->item('store_salt', 'ws_auth'))
 		{
 			// Salt is store at the side, retrieve it
 			$query = $this->db->select('salt')
@@ -2757,7 +2757,7 @@ class Ws_auth_model extends CI_Model
 		else
 		{
 			// Salt is stored along with password
-			$salt_length = $this->config->item('salt_length', 'ion_auth');
+			$salt_length = $this->config->item('salt_length', 'ws_auth');
 
 			if (!$salt_length)
 			{
