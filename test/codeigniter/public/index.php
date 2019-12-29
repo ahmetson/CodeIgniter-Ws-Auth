@@ -1,4 +1,6 @@
 <?php
+
+
 /**
  * CodeIgniter
  *
@@ -35,6 +37,17 @@
  * @since	Version 1.0.0
  * @filesource
  */
+
+
+/*
+ *---------------------------------------------------------------
+ * Include Dependencies (RatchetPHP, etc)
+ *---------------------------------------------------------------
+ *
+ * Include the namespaces of Dependencies loaded by Composer.
+ */
+include __DIR__.'\..\..\..\vendor\autoload.php';
+
 
 /*
  *---------------------------------------------------------------
