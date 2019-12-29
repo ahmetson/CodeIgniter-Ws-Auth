@@ -1084,7 +1084,7 @@ class Ws_auth_model extends CI_Model
 	 */
 	public function recheck_session()
 	{
-		if (empty($this->session->userdata('identity')))
+		if (empty($this->session->get('identity')))
 		{
 			return FALSE;
 		}
@@ -1093,12 +1093,12 @@ class Ws_auth_model extends CI_Model
 
 		if ($recheck !== 0)
 		{
-			$last_login = $this->session->userdata('last_check');
+			$last_login = $this->session->get('last_check');
 			if ($last_login + $recheck < time())
 			{
 				$query = $this->db->select('id')
 								  ->where([
-									  $this->identity_column => $this->session->userdata('identity'),
+									  $this->identity_column => $this->session->get('identity'),
 									  'active' => '1'
 								  ])
 								  ->limit(1)
@@ -1106,7 +1106,7 @@ class Ws_auth_model extends CI_Model
 								  ->get($this->tables['users']);
 				if ($query->num_rows() === 1)
 				{
-					$this->session->set_userdata('last_check', time());
+					$this->session->set('last_check', time());
 				}
 				else
 				{
@@ -1114,14 +1114,17 @@ class Ws_auth_model extends CI_Model
 
 					$identity = $this->config->item('identity', 'ws_auth');
 
-					$this->session->unset_userdata([$identity, 'id', 'user_id']);
+
+					$this->session->remove($identity);
+					$this->session->remove('id');
+					$this->session->remove('user_id');
 
 					return FALSE;
 				}
 			}
 		}
 
-		return (bool)$this->session->userdata('identity');
+		return (bool)$this->session->get('identity');
 	}
 
 	/**
@@ -1599,7 +1602,7 @@ class Ws_auth_model extends CI_Model
 		$this->trigger_events('user');
 
 		// if no id was passed use the current users id
-		$id = isset($id) ? $id : $this->session->userdata('user_id');
+		$id = isset($id) ? $id : $this->session->get('user_id');
 
 		$this->limit(1);
 		$this->order_by($this->tables['users'].'.id', 'desc');
@@ -1623,7 +1626,7 @@ class Ws_auth_model extends CI_Model
 		$this->trigger_events('get_users_group');
 
 		// if no id was passed use the current users id
-		$id || $id = $this->session->userdata('user_id');
+		$id || $id = $this->session->get('user_id');
 
 		return $this->db->select($this->tables['users_groups'].'.'.$this->join['groups'].' as id, '.$this->tables['groups'].'.name, '.$this->tables['groups'].'.description')
 		                ->where($this->tables['users_groups'].'.'.$this->join['users'], $id)
@@ -1643,7 +1646,7 @@ class Ws_auth_model extends CI_Model
 	{
 		$this->trigger_events('in_group');
 
-		$id || $id = $this->session->userdata('user_id');
+		$id || $id = $this->session->get('user_id');
 
 		if (!is_array($check_group))
 		{
@@ -1703,7 +1706,7 @@ class Ws_auth_model extends CI_Model
 		$this->trigger_events('add_to_group');
 
 		// if no id was passed use the current users id
-		$user_id || $user_id = $this->session->userdata('user_id');
+		$user_id || $user_id = $this->session->get('user_id');
 
 		if(!is_array($group_ids))
 		{
@@ -2045,7 +2048,10 @@ class Ws_auth_model extends CI_Model
 		    'last_check'           => time(),
 		];
 
-		$this->session->set_userdata($session_data);
+		foreach ( $session_data as $key => $value ) 
+		{
+			$this->session->set ( $key, $name );
+		}
 
 		$this->trigger_events('post_set_session');
 
@@ -2163,7 +2169,7 @@ class Ws_auth_model extends CI_Model
 				}
 
 				// Regenerate the session (for security purpose: to avoid session fixation)
-				$this->session->sess_regenerate(FALSE);
+				$this->session->migrate(FALSE);
 
 				$this->trigger_events(['post_login_remembered_user', 'post_login_remembered_user_successful']);
 				return TRUE;

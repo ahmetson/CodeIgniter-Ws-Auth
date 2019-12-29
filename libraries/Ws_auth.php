@@ -66,8 +66,6 @@ class Ws_auth
 		$this->lang->load('ws_auth');
 		$this->load->helper(['cookie', 'language','url']);
 
-		$this->load->library('session');
-
 		$this->load->model('ws_auth_model');
 
 		$this->_cache_user_in_group =& $this->ws_auth_model->_cache_user_in_group;
@@ -328,7 +326,9 @@ class Ws_auth
 
 		$identity = $this->config->item('identity', 'ws_auth');
 
-		$this->session->unset_userdata([$identity, 'id', 'user_id']);
+		$this->ws_auth_model->session->remove($identity);
+		$this->ws_auth_model->session->remove('id');
+		$this->ws_auth_model->session->remove('user_id');
 
 		// delete the remember me cookies if they exist
 		delete_cookie($this->config->item('remember_cookie_name', 'ws_auth'));
@@ -338,7 +338,7 @@ class Ws_auth
 		$this->ws_auth_model->clear_remember_code($identity);
 
 		// Destroy the session
-		$this->session->sess_destroy();
+		$this->ws_auth_model->session->invalidate();
 
 		$this->set_message('logout_successful');
 		return TRUE;
@@ -370,7 +370,7 @@ class Ws_auth
 	 **/
 	public function get_user_id()
 	{
-		$user_id = $this->session->userdata('user_id');
+		$user_id = $this->ws_auth_model->session->get('user_id');
 		if (!empty($user_id))
 		{
 			return $user_id;
