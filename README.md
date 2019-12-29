@@ -1,19 +1,24 @@
-# Ion Auth 3
-### The future of authentication
-by [Ben Edmunds](http://benedmunds.com)
+# CodeIgniter WebSockets Authorization
+### Description
+by [Medet Ahmetson]
 
-Simple and lightweight authentication for your CodeIgniter apps.
+Authentication System for your WebSocket Servers written by [Ratchet PHP](https://github.com/ratchetphp/Ratchet) and CodeIgniter framework.
 
-Ion Auth 2 dropped any backwards compatibility and made things more
-awesome.
+It's based on [Ion Auth 3](https://github.com/benedmunds/CodeIgniter-Ion-Auth). **Ws Auth** changed the underlying code, without affecting the interface, to able the simple and easy to use Auth Lib for Ratchet PHP.
 
-Ion Auth 3, while not dropping as much backwards compatibility, made things
-even more awesome!
+Since, the command interface of **Ws Auth** is the same as API of **IoN Auth 3**, the documentation of IoN could be also used for Ws Auth library.
+
+*NOTE! Ws Auth doesn't support native Sessions*
 
 ## Server requirements
-Ion Auth 3 needs **CodeIgniter 3** and **PHP 5.6**.
-It should work on 5.4 as well, but we strongly advise you NOT to run such old versions of PHP, because of potential security and performance issues.
-In this case, you may need [password_compat](https://github.com/ircmaxell/password_compat).
+
+**CodeIgniter 3** &ndash; a popular Framework
+
+**Php 5.6**
+
+**RatchetPHP** &ndash; a popular WebSocket library written on PHP
+
+*Ws Auth* also could be used without RatchetPHP, but include symfony sessions as WebSocket dependency at composer.json.
 
 ## Documentation
 Documentation is located at http://benedmunds.com/ion_auth/
@@ -40,20 +45,8 @@ It is highly recommended that you use encrypted database sessions for security!
 
 
 ## Support
-If you think you've found a bug please [Create an Issue](https://github.com/benedmunds/CodeIgniter-Ion-Auth/issues).
+If you think you've found a bug please [Create an Issue](https://github.com/ahmetson/CodeIgniter-Ws-Auth/issues).
 
-If you need a customization or help implementing Ion Auth into your project please [Email Me for Consulting Information](mailto:ionauth_consulting@benedmunds.com).
-
-If your company would like a support contract or service agreement please [Reach Out](mailto:ionauth_support_contract@benedmunds.com) to discuss available options.
+If you need any help implementing Ws Auth into your project please [Email Me for Consulting Information](mailto:admin@blocklords.io).
 
 
-## For Help
-If you're having an issue with CodeIgniter or for general help with development I recommend checking out the [CodeIgniter Forums](http://forum.codeigniter.com).
-
-If you think you've found a bug please [Create an Issue](https://github.com/benedmunds/CodeIgniter-Ion-Auth/issues).
-
-
-Thanks,    
--Ben Edmunds       
- [benedmunds.com](http://benedmunds.com)  
- [@benedmunds](http://twitter.com/benedmunds)   
