@@ -14,12 +14,25 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 require ( __DIR__.'\..\..\..\Message.php' );
 
-define('PORT', 8000);
+define ( 'PORT', 8000 );
+
+define ( 'PROJECT_ROOT', __DIR__. DIRECTORY_SEPARATOR . '..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR );
+define ( 'LIB_PATH', PROJECT_ROOT.'src'.DIRECTORY_SEPARATOR.'ws-auth'.DIRECTORY_SEPARATOR );
+
+// require ( $LIB_PATH . 'libraries' . DIRECTORY_SEPARATOR . 'Ws_auth.php' );
 
 class Ws_tester extends CI_Controller {
 
 	public function run_server()
 	{
+	
+		// Loading the Ws-auth
+		$this->load->add_package_path ( LIB_PATH );
+		$this->load->library ( 'Ws_auth' );
+		$this->load->remove_package_path ( LIB_PATH );
+
+
+
 		// echo "\n\n\tWEB_SOCKET SERVER IS RUNNING AT PORT ".PORT.".\n";
 	    $pdo = new PDO ( 'mysql:host=localhost;dbname=ws-auth-tester', 'root', '' );
 		$pdo->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
