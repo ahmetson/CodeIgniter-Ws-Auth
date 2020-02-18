@@ -312,16 +312,11 @@ class Ws_auth_model extends CI_Model
         
         $storage = new NativeSessionStorage([], new PdoSessionHandler ( $pdo, $options ) );
         $this->session = new Session ( $storage );
+        // $this->session->start ();
 
 		// initialize the database
 		$group_name = $this->config->item('database_group_name', 'ws_auth');
-		if ( empty ( $group_name ) ) 
-		{
-			// By default, use CI's db that should be already loaded
-			$CI =& get_instance();
-			$this->db = $CI->db;
-		}
-		else
+		if ( ! empty ( $group_name ) ) 
 		{
 			// For specific group name, open a new specific connection
 			$this->db = $this->load->database($group_name, TRUE, TRUE);
