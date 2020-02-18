@@ -215,7 +215,7 @@ class Ws_auth_model extends CI_Model
 	 *
 	 *	@return PDO object
 	 */
-	private function _connect_db ( $host = 'localhost', $dbname = 'ws-auth-tester', $username = 'root', $password = '' )
+	private function _connect_db ( $host = 'localhost', $dbname = 'blocklords_ethereum_test', $username = 'root', $password = '' )
     {
         $pdo = new PDO ( "mysql:host=$host;dbname=$dbname", $username, $password );
         $pdo->setAttribute ( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
@@ -236,8 +236,13 @@ class Ws_auth_model extends CI_Model
         return $db_options;
     }
 
-	public function __construct ( $host = '', $dbname = '', $username = '', $password = '' )
+	public function __construct ( $host = '', $dbname = 'blocklords_ethereum_test', $username = 'root', $password = '' )
 	{
+		$host 		= $_ENV [ 'DB_HOST' ];
+		$dbname 	= $_ENV [ 'DB_NAME' ];
+		$username 	= $_ENV [ 'DB_USERNAME' ];
+		$password 	= $_ENV [ 'DB_PASSWORD' ];
+
 		$this->config->load('ws_auth', TRUE);
 		$this->load->helper('cookie', 'date');
 		$this->lang->load('ws_auth');
@@ -272,6 +277,8 @@ class Ws_auth_model extends CI_Model
 					$password = $CI->db->password;
 				}
 			}
+
+			$this->db = $CI->db;
 		}
 		else if ( isset ( $this->db ) )
 		{
