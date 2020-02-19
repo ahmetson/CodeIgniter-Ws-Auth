@@ -2066,6 +2066,37 @@ class Ws_auth_model extends CI_Model
 	}
 
 	/**
+	 * set_session
+	 *
+	 * @param string 	 	$wallet_address
+	 * @param int 			$player_id
+	 *
+	 * @return bool
+	 * @author jrmadsen67, ahmetosn
+	 */
+	public function set_session_by_wallet( $wallet_address, $player_id )
+	{
+		$this->trigger_events('pre_set_session');
+
+		$session_data = [
+		    'identity'             => $wallet_address,
+		    'wallet_address'       => $wallet_address,
+		    'user_id'              => $player_id, //everyone likes to overwrite id so we'll use user_id
+		    'last_check'           => time(),
+		    'is_wallet'			   => TRUE
+		];
+
+		foreach ( $session_data as $key => $value ) 
+		{
+			$this->session->set ( $key, $value );
+		}
+
+		$this->trigger_events('post_set_session');
+
+		return TRUE;
+	}
+
+	/**
 	 * Set a user to be remembered
 	 *
 	 * Implemented as described in
