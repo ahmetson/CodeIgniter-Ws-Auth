@@ -310,7 +310,9 @@ class Ws_auth_model extends CI_Model
 		$pdo = $this->_connect_db ( $host, $dbname, $username, $password );
         $options = $this->_get_options ();
         
-        $storage = new NativeSessionStorage([], new PdoSessionHandler ( $pdo, $options ) );
+		$gc_maxlifetime = $this->config->item('gc_maxlifetime', 'ws_auth');
+
+        $storage = new NativeSessionStorage ( array ( 'gc_maxlifetime' => $gc_maxlifetime ), new PdoSessionHandler ( $pdo, $options ) );
         $this->session = new Session ( $storage );
         // $this->session->start ();
 
