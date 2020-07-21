@@ -149,9 +149,12 @@ $config['lockout_time']               = 600;                 /* The number of se
 $config['forgot_password_expiration'] = 1800;                /* The number of seconds after which a forgot password request will expire. If set to 0, forgot password requests will not expire.
                    												30 minutes to 1 hour are good values (enough for a user to receive the email and reset its password)
                    												You should not set a value too high, as it would be a security issue! */
-$config['recheck_timer']              = 0;                   /* The number of seconds after which the session is checked again against database to see if the user still exists and is active.
+$config['recheck_timer']              = 86400;              /* The number of seconds after which the session is checked again against database to see if the user still exists and is active.
 																Leave 0 if you don't want session recheck. if you really think you need to recheck the session against database, we would
 																recommend a higher value, as this would affect performance */
+$config['gc_maxlifetime']			  = isset ( $_ENV [ 'SESSION_LIFETIME' ] ) ? $_ENV [ 'SESSION_LIFETIME' ] : 10000;			
+															/*  The lifetime of the session. Set to 0, to make the session endless */
+
 
 /*
  | -------------------------------------------------------------------------
