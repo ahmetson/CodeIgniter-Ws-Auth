@@ -1189,49 +1189,70 @@ class Ws_auth_model extends CI_Model
 	 * it will check if the user is still active
 	 * @return bool
 	 */
-	public function recheck_session()
+	public function recheck_session( $session = NULL )
 	{
-		if (empty($this->session->get('identity')))
+		if ( is_null ( $session ) )
+		{
+			$session = $this->session;
+		}
+
+		if (empty($session->get('identity')))
 		{
 			return FALSE;
 		}
 
 		$recheck = (NULL !== $this->config->item('recheck_timer', 'ws_auth')) ? $this->config->item('recheck_timer', 'ws_auth') : 0;
 
-		if ($recheck !== 0)
-		{
-			$last_login = $this->session->get('last_check');
-			if ($last_login + $recheck < time())
-			{
-				$query = $this->db->select('id')
+		if ( ! empty ( $recheck ) ) {
+			$last_login = $session->get('last_check');
+			if ($last_login + $recheck < time()) {
+				if ( $this->db_loaded ) {
+					$query = $this->db->select('id')
 								  ->where([
-									  $this->identity_column => $this->session->get('identity'),
+									  $this->identity_column => $session->get('identity'),
 									  'active' => '1'
 								  ])
 								  ->limit(1)
 								  ->order_by('id', 'desc')
 								  ->get($this->tables['users']);
-				if ($query->num_rows() === 1)
-				{
-					$this->session->set('last_check', time());
-				}
-				else
-				{
-					$this->trigger_events('logout');
+					if ($query->num_rows() === 1)
+					{
+						$session->set('last_check', time());
+					}
+					else
+					{
+						if ( is_null ( $session ) )
+						{
+							$this->trigger_events('logout');
+						}
+
+						$identity = $this->config->item('identity', 'ws_auth');
+
+
+						$session->remove($identity);
+						$session->remove('id');
+						$session->remove('user_id');
+
+						return FALSE;
+					}
+				} else {
+					if ( is_null ( $session ) ) {
+						$this->trigger_events('logout');
+					}
 
 					$identity = $this->config->item('identity', 'ws_auth');
 
 
-					$this->session->remove($identity);
-					$this->session->remove('id');
-					$this->session->remove('user_id');
+					$session->remove($identity);
+					$session->remove('id');
+					$session->remove('user_id');
 
 					return FALSE;
 				}
 			}
 		}
 
-		return (bool)$this->session->get('identity');
+		return (bool)$session->get('identity');
 	}
 
 	/**
