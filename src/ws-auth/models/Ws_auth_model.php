@@ -386,6 +386,23 @@ class Ws_auth_model extends CI_Model
 		}
     }
 
+	public function __construct ( ) {
+		$session_type = '';
+
+
+		$this->config->load('ws_auth', TRUE);
+		$this->load->helper('cookie', 'date');
+		$this->lang->load('ws_auth');
+        
+        if ( isset ( $_ENV [ 'AUTH_STORAGE_LOAD' ] ) ) {
+        	$storage_load = $_ENV [ 'AUTH_STORAGE_LOAD' ];
+
+			if ( $storage_load === 'database' ) {
+				$this->session = $this->createSession ( $this->createStorage () );
+			} else if ( $storage_load === 'redis' ) {
+		        $this->session = $this->createSession( $this->createRedisStorage () );
+			}
+		}
 		// initialize db tables data
 		$this->tables = $this->config->item('tables', 'ws_auth');
 
