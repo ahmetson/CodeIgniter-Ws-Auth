@@ -212,3 +212,17 @@ $config['message_start_delimiter'] = '<p>'; 	// Message start delimiter
 $config['message_end_delimiter']   = '</p>'; 	// Message end delimiter
 $config['error_start_delimiter']   = '<p>';		// Error message start delimiter
 $config['error_end_delimiter']     = '</p>';	// Error message end delimiter
+
+
+/*
+ | -------------------------------------------------------------------------
+ | Redis Cache
+ | -------------------------------------------------------------------------
+ | Default: activate.tpl.php
+ */
+$config['cache_port'] 			= isset ( $_ENV [ 'CACHE_PORT' ] ) ? ( int ) $_ENV [ 'CACHE_PORT' ] : 6379;		
+$config['cache_host'] 			= isset ( $_ENV [ 'CACHE_HOST' ] ) ? $_ENV [ 'CACHE_HOST' ] : 'localhost';
+$config['cache_user'] 			= isset ( $_ENV [ 'CACHE_USER' ] ) ? $_ENV [ 'CACHE_USER' ] : 'default';
+$config['cache_pass'] 			= isset ( $_ENV [ 'CACHE_PASS' ] ) ? $_ENV [ 'CACHE_PASS' ] : '';
+$config['cache_con_timeout'] 	= isset ( $_ENV [ 'CACHE_CON_TIMEOUT' ] ) ? ( int ) $_ENV [ 'CACHE_CON_TIMEOUT' ] : 1;
+$config['cache_con_delay'] 		= isset ( $_ENV [ 'CACHE_CON_HOST' ] ) ? ( int ) $_ENV [ 'CACHE_CON_DELAY' ] : 100;
