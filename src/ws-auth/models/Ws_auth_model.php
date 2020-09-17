@@ -205,6 +205,12 @@ class Ws_auth_model extends CI_Model
 	protected $db;
 
 	/**
+	 * Whether it was loaded during object construction or not
+	 * @var [type]
+	 */
+	protected $db_loaded;
+
+	/**
 	 * Session object
 	 *
 	 * @var session
@@ -403,6 +409,19 @@ class Ws_auth_model extends CI_Model
 		        $this->session = $this->createSession( $this->createRedisStorage () );
 			}
 		}
+
+		if ( isset ( $_ENV [ 'AUTH_DB_LOAD' ] ) ) {
+			$db_load = $_ENV [ 'AUTH_DB_LOAD' ];
+
+			if ( ! empty ( $db_load ) ) {
+				$this->_init_db ();
+				$this->db_loaded = TRUE;
+			} else {
+				$this->db_loaded = FALSE;
+			}
+		}
+		
+
 		// initialize db tables data
 		$this->tables = $this->config->item('tables', 'ws_auth');
 
