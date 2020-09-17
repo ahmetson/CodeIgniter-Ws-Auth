@@ -4,6 +4,7 @@
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\NativeSessionStorage;
 use Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler;
+use Symfony\Component\HttpFoundation\Session\Storage\Handler\RedisSessionHandler;
 
 
 /**
@@ -210,6 +211,9 @@ class Ws_auth_model extends CI_Model
 	 */
 	public $session;
 
+
+	public $storage;
+
 	/**
 	 * 	Creates a PDO connection
 	 *
@@ -236,18 +240,13 @@ class Ws_auth_model extends CI_Model
         return $db_options;
     }
 
-	public function __construct ( $host = '', $dbname = 'blocklords_ethereum_test', $username = 'root', $password = '' )
-	{
-		$host 		= $_ENV [ 'DB_HOST' ];
+    public function createStorage() {
+    	$host 		= $_ENV [ 'DB_HOST' ];
 		$dbname 	= $_ENV [ 'DB_NAME' ];
 		$username 	= $_ENV [ 'DB_USERNAME' ];
 		$password 	= $_ENV [ 'DB_PASSWORD' ];
 
-		$this->config->load('ws_auth', TRUE);
-		$this->load->helper('cookie', 'date');
-		$this->lang->load('ws_auth');
-
-		// get database data from codeigniter.
+    	// get database data from codeigniter.
 		if ( function_exists ( 'get_instance' ) )
 		{
 			$CI = &get_instance ();
@@ -309,20 +308,83 @@ class Ws_auth_model extends CI_Model
 
 		$pdo = $this->_connect_db ( $host, $dbname, $username, $password );
         $options = $this->_get_options ();
-        
+
 		$gc_maxlifetime = $this->config->item('gc_maxlifetime', 'ws_auth');
 
-        $storage = new NativeSessionStorage ( array ( 'gc_maxlifetime' => $gc_maxlifetime ), new PdoSessionHandler ( $pdo, $options ) );
-        $this->session = new Session ( $storage );
-        // $this->session->start ();
+		$handler = new PdoSessionHandler ( $pdo, $options );
 
-		// initialize the database
+    	$storage = new NativeSessionStorage ( array ( 'gc_maxlifetime' => $gc_maxlifetime ), $handler );
+    
+    	return $storage;
+    }
+
+    public function createSession( $storage = NULL ) {
+    	if ($storage === NULL) {
+    		$storage = $this->createRedisStorage();
+    	}
+
+        $session = new Session ( $storage );
+    
+        return $session;
+    }
+
+    	/**
+     * Creates a connection to storage on Redis Cache
+     * @return [type] [description]
+     */
+    public function createRedisStorage() {
+
+		$gc_maxlifetime = $this->config->item('gc_maxlifetime', 'ws_auth');
+
+		$handler = new RedisSessionHandler ( $this->_redis () );
+
+    	$storage = new NativeSessionStorage ( array ( 'gc_maxlifetime' => $gc_maxlifetime ), $handler );
+    
+    	return $storage;
+    }
+
+    private function _redis () {
+    	$redis = new Redis();
+
+    	$port = $this->config->item('cache_port', 'ws_auth');
+    	$host = $this->config->item('cache_host', 'ws_auth');
+    	$con_timeout = $this->config->item('cache_con_timeout', 'ws_auth');
+    	$con_delay = $this->config->item('cache_con_delay', 'ws_auth');
+    	$user = $this->config->item('cache_user', 'ws_auth');
+    	$pass = $this->config->item('cache_pass', 'ws_auth');
+
+        $result = $redis->connect ( $host, $port, $con_timeout, NULL, $con_delay );
+        if ( $result === FALSE ) 
+        {
+            $redis = NULL;
+            return FALSE;
+        }
+
+
+        $result = $redis->auth ( [ 'user' => $user, 'pass' => $pass ] );
+        if ( $result === FALSE )
+        {
+            $redis->close ();
+            $redis = NULL;
+            return FALSE;
+        }
+
+        return $redis;
+    }
+
+    protected function _init_db () {
+    	if ( $this->db_loaded ) {
+    		return;
+    	}
+    	// initialize the database
 		$group_name = $this->config->item('database_group_name', 'ws_auth');
-		if ( ! empty ( $group_name ) ) 
-		{
+		if ( ! empty ( $group_name ) )  {
 			// For specific group name, open a new specific connection
 			$this->db = $this->load->database($group_name, TRUE, TRUE);
-		}   
+		} else	{
+			$this->db = $this->load->database('default', TRUE);
+		}
+    }
 
 		// initialize db tables data
 		$this->tables = $this->config->item('tables', 'ws_auth');
